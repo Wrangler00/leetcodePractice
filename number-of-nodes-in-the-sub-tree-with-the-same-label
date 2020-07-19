@@ -1,0 +1,93 @@
+//https://leetcode.com/contest/weekly-contest-198/problems/number-of-nodes-in-the-sub-tree-with-the-same-label/
+
+//cpp solution
+
+//not correct solution
+
+class Solution {
+    struct Node{
+        int val;
+        char label;
+        vector<int> cht;
+        vector<Node*> child;
+    };
+    
+    vector<int> ans;
+public:
+    Node* newNode(int val,char lab){
+        Node *tmp = new Node;
+        tmp->val = val;
+        tmp->label = lab;
+        tmp->cht= vector<int>(26,0);
+        tmp->cht[lab-'a'] = 1;
+        tmp->child = vector<Node*>();
+        
+        return tmp;
+    }
+    
+    vector<int> recurse(Node *pNode,char ch){
+        if(pNode == NULL)
+            return vector<int>(26,0);
+        
+        vector<int> tmp(26,0);
+        
+        for(Node* v:pNode->child){
+            tmp = recurse(v,pNode->label);
+            
+            for(int i=0;i<26;i++){
+                pNode->cht[i] += tmp[i];
+            }
+        }
+        
+        // cout<<pNode->val<<" , "<<pNode->label<<endl;
+        
+        ans[pNode->val] = pNode->cht[pNode->label-'a'];
+        return pNode->cht;
+    }
+    
+    void bfs(Node *pNode){
+        if(pNode == NULL)
+            return;
+        
+        queue<Node*> st;
+        st.push(pNode);
+        
+        while(!st.empty()){
+            Node *tmp = st.front();
+            st.pop();
+            // cout<<tmp->val<<" ";
+            
+            for(Node* v:tmp->child){
+                st.push(v);
+            }
+        }
+    }
+    vector<int> countSubTrees(int n, vector<vector<int>>& e, string l) {
+        vector<vector<int>> list(n,vector<int>());
+        int tree[4*n];
+        
+        ans = vector<int>(n);
+        for(auto v: e){
+            list[v[0]].push_back(v[1]);
+        }
+        
+        stack<Node*> st;
+        Node *root = newNode(0,l[0]);
+        st.push(root);
+        
+        while(!st.empty()){
+            Node *tmp = st.top();
+            st.pop();
+            
+            for(auto v:list[tmp->val]){
+                Node *node = newNode(v,l[v]);
+                tmp->child.push_back(node);
+                st.push(node);
+            }
+        }
+        
+        recurse(root,l[0]);
+        
+        return ans;
+    }
+};
