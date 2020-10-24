@@ -53,3 +53,41 @@ public:
         return ans;
     }
 };
+
+
+//cpp my 2nd solution
+//very fast and optimized using stack
+
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& nm) {
+        int sz = nm.size();
+        vector<int> ans(sz);
+        
+        stack<int> st;
+        
+        for(int i=0;i<sz;i++){
+            while(!st.empty() && nm[st.top()]<nm[i]){
+                ans[st.top()] = nm[i];
+                st.pop();
+            }
+            st.push(i);
+        }
+        
+        for(int i=0;i<sz;i++){
+            while(!st.empty() && nm[st.top()]<nm[i]){
+                ans[st.top()] = nm[i];
+                st.pop();
+                if(!st.empty())
+                    sz=st.top();
+            }
+        }
+        
+        while(!st.empty()){
+            ans[st.top()]=-1;
+            st.pop();
+        }
+        
+        return ans;
+    }
+};
