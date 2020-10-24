@@ -1,0 +1,55 @@
+Given a circular array (the next element of the last element is the first element of the array), print the Next Greater Number for every element. The Next Greater Number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, output -1 for this number.
+
+Example 1:
+Input: [1,2,1]
+Output: [2,-1,2]
+Explanation: The first 1's next greater number is 2; 
+The number 2 can't find next greater number; 
+The second 1's next greater number needs to search circularly, which is also 2.
+
+//cpp my solution
+//accepted but very very slow
+//less than 5.15% time
+
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& nm) {
+        int sz = nm.size();
+        
+        vector<int> src(sz,-1);
+        vector<int> ans(sz);
+        int minn=INT_MAX;
+        for(int i=0;i<sz;i++){
+            if(nm[i]>=minn){
+                ans[i]=-1;
+                continue;
+            }
+            int j=(i+1)%sz;
+            int count=0;
+            while(count<=sz){
+                if(nm[j]>nm[i]){
+                    ans[i] = nm[j];
+                    src[i] = j;
+                    break;
+                }else if(src[j]!=-1 && count+abs(j-src[j])<=sz && nm[src[j]]>nm[i]){
+                    ans[i] = nm[src[j]];
+                    src[i] = src[j];
+                    break;
+                }else if(src[j]==-1){
+                    j = (j+1)%sz;
+                    ++count;
+                }else{
+                    count += abs(src[j]-j);
+                    j = src[j];
+                }
+            }
+            
+            if(count>sz){
+                ans[i]=-1;
+                minn = min(minn,nm[i]);
+            }
+        }
+        
+        return ans;
+    }
+};
