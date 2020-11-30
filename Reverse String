@@ -1,0 +1,63 @@
+Write a function that reverses a string. The input string is given as an array of characters char[].
+
+Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+
+You may assume all the characters consist of printable ascii characters.
+
+ 
+
+Example 1:
+
+Input: ["h","e","l","l","o"]
+Output: ["o","l","l","e","h"]
+Example 2:
+
+Input: ["H","a","n","n","a","h"]
+Output: ["h","a","n","n","a","H"]
+
+
+//cpp my recursive solution
+
+class Solution {
+    int len;
+public:
+    int pr(int i,vector<char>& s){
+        if(i==len/2)  return (len%2+1);
+        int j = pr(i+1,s);
+        
+        cout<<s[i];
+        
+        char tmp=s[i];
+        s[i]=s[i+j];
+        s[i+j]=tmp;
+        
+        return j+2;
+    }
+    void reverseString(vector<char>& s) {
+        len=s.size();
+        
+        pr(0,s);
+        return;
+    }
+};
+
+
+//my 2 pointer recursive solution
+
+class Solution {
+public:
+    void swap(int i,int j,vector<char>& s){
+        char tmp=s[i];
+        s[i]=s[j];
+        s[j]=tmp;
+    }
+    void pr(int i,int j,vector<char>& s){
+        if(i>=j)    return;
+        pr(i+1,j-1,s);
+        swap(i,j,s);
+    }
+    void reverseString(vector<char>& s) {
+        pr(0,s.size()-1,s);
+        return;
+    }
+};
