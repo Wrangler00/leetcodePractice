@@ -1,0 +1,52 @@
+Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+
+A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+
+
+
+ 
+
+Example 1:
+
+Input: digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+Example 2:
+
+Input: digits = ""
+Output: []
+Example 3:
+
+Input: digits = "2"
+Output: ["a","b","c"]
+ 
+
+Constraints:
+
+0 <= digits.length <= 4
+digits[i] is a digit in the range ['2', '9'].
+
+//my dfs solution
+
+class Solution {
+    vector<string> src = {"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+    string d;
+public:
+    vector<string> dfs(int i){
+        if(i>=d.length())    return {""};
+            
+        vector<string> tmp,next = dfs(i+1);
+        
+        for(int j=0;j<src[d[i]-'0'].length();j++){
+            for(string &s:next){ 
+                tmp.push_back(src[d[i]-'0'][j]+s);
+            }
+        }
+        
+        return tmp;
+    }
+    
+    vector<string> letterCombinations(string dd) {
+        d=dd;
+        return d.length() ? dfs(0) : vector<string>();
+    }
+};
