@@ -44,6 +44,7 @@ Constraints:
 
 //cpp my solution
 //DP solution after working on it for very long time
+//top down approach
 
 class Solution {
     int lim,faces;
@@ -71,5 +72,45 @@ public:
         dp = vector<vector<long>>(d+1,vector<long>(t+1,-1));
         solve(0,t);
         return dp[0][t]%mod;
+    }
+};
+
+
+//solution 2
+//bottom up approach
+class Solution {
+    int lim,faces,tt;
+    vector<vector<long>> dp;
+    const long mod = 1e9+7;
+public:
+    // void print(){
+    //     for(auto &a:dp){
+    //         for(auto &b:a)
+    //             cout<<b<<" ";
+    //         cout<<endl;
+    //     }
+    // }
+    int solve(int diceNo,int sum){
+        if(sum>tt)   return 0;
+        if(diceNo>=lim) return sum==tt;
+        
+        if(dp[diceNo][sum]!=-1)
+            return dp[diceNo][sum];
+        
+        
+        long res=0;
+        for(int i=1;i<=faces;i++){
+            long tmp = solve(diceNo+1, sum+i);
+            if(tmp!=-1)  res+=(tmp%mod);
+        }
+        return dp[diceNo][sum] = res%mod;
+    }
+    
+    int numRollsToTarget(int d, int f, int t) {
+        lim=d,faces=f,tt=t;
+        dp = vector<vector<long>>(d+1,vector<long>(t+1,-1));
+        solve(0,0);
+        // print();
+        return dp[0][0]%mod;
     }
 };
