@@ -1,0 +1,119 @@
+In English, we have a concept called root, which can be followed by some other word to form another longer word - let's call this word successor. For example, when the root "an" is followed by the successor word "other", we can form a new word "another".
+
+Given a dictionary consisting of many roots and a sentence consisting of words separated by spaces, replace all the successors in the sentence with the root forming it. If a successor can be replaced by more than one root, replace it with the root that has the shortest length.
+
+Return the sentence after the replacement.
+
+ 
+
+Example 1:
+
+Input: dictionary = ["cat","bat","rat"], sentence = "the cattle was rattled by the battery"
+Output: "the cat was rat by the bat"
+Example 2:
+
+Input: dictionary = ["a","b","c"], sentence = "aadsfasf absbs bbab cadsfafs"
+Output: "a a b c"
+Example 3:
+
+Input: dictionary = ["a", "aa", "aaa", "aaaa"], sentence = "a aa a aaaa aaa aaa aaa aaaaaa bbb baba ababa"
+Output: "a a a a a a a a bbb baba a"
+Example 4:
+
+Input: dictionary = ["catt","cat","bat","rat"], sentence = "the cattle was rattled by the battery"
+Output: "the cat was rat by the bat"
+Example 5:
+
+Input: dictionary = ["ac","ab"], sentence = "it is abnormal that this solution is accepted"
+Output: "it is ab that this solution is ac"
+ 
+
+Constraints:
+
+1 <= dictionary.length <= 1000
+1 <= dictionary[i].length <= 100
+dictionary[i] consists of only lower-case letters.
+1 <= sentence.length <= 10^6
+sentence consists of only lower-case letters and spaces.
+The number of words in sentence is in the range [1, 1000]
+The length of each word in sentence is in the range [1, 1000]
+Each two consecutive words in sentence will be separated by exactly one space.
+sentence does not have leading or trailing spaces.
+
+
+//cpp my solution
+//using TRIE
+
+class TrieNode {
+public:
+    bool isEnd;
+    vector<TrieNode*> child;
+    TrieNode(){
+        child = vector<TrieNode*>(26);
+        isEnd = false;
+    }
+};
+
+class Trie{
+    TrieNode *root;
+    public:
+        Trie(){
+            root = new TrieNode();
+        }
+        void insert(string &s){
+            TrieNode *node = root;
+            
+            for(char &ch:s){
+                if(!node->child[ch-'a']){
+                    node->child[ch-'a'] = new TrieNode();
+                }
+                
+                node = node->child[ch-'a'];
+            }
+            
+            node->isEnd = true;
+        }
+    
+        string find(string s){
+            TrieNode *node = root;
+            string make="";
+            
+            for(char &ch:s){
+                make+=ch;
+                
+                if(node->child[ch-'a']){
+                    if(node->child[ch-'a']->isEnd)  
+                        return make;
+                    node = node->child[ch-'a'];
+                }else{
+                    return "";
+                }
+            }
+            
+            return "";
+        }
+};
+
+
+class Solution {
+public:
+    string replaceWords(vector<string>& dict, string sent) {
+        string ans = "";
+        Trie *t = new Trie();
+        
+        for(string s:dict)  t->insert(s);
+        
+        istringstream iss(sent);
+        vector<string> words{istream_iterator<string>{iss},
+                      istream_iterator<string>{}};
+        
+        for(string &s:words){
+            string f = t->find(s);
+            if(f != "") s = f;
+            ans+=s+" ";
+        }
+        
+        ans.pop_back();
+        return ans;
+    }
+};
