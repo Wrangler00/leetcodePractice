@@ -1,0 +1,52 @@
+Given a string s, return the longest 
+palindromic
+ 
+substring
+ in s.
+
+ 
+
+Example 1:
+
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+Example 2:
+
+Input: s = "cbbd"
+Output: "bb"
+ 
+
+Constraints:
+
+1 <= s.length <= 1000
+s consist of only digits and English letters.
+
+//cpp
+
+
+class Solution {
+    typedef vector<bool> vb;
+public:
+    string longestPalindrome(string s) {
+        int n = s.length();
+        pair<int,int> ans = {0,0};
+        vector<vb> dp(n,vb(n,false));
+
+        for(int i=n-1;i>=0;i--){
+            dp[i][i] = true;
+            for(int j=i+1;j<n;j++){
+                if(s[i] == s[j])
+                    dp[i][j] = (j-i == 1) || dp[i+1][j-1];
+                else
+                    dp[i][j] = false;
+
+                if(dp[i][j] && j-i > ans.second-ans.first){
+                    ans = {i,j};
+                }
+            }
+        }
+
+        return s.substr(ans.first, ans.second-ans.first+1);
+    }
+};
