@@ -85,3 +85,48 @@ public:
         return false;
     }
 };
+
+//my solution after learning
+class Solution {
+public:
+    /**
+    Since, in the minimum array, min[p]≤min[q], 
+    for every p>q, these popped elements also satisfy 
+    stack[top]≤min[k], for all 0≤k<j.
+    Thus, they are not the potential nums[k] candidates 
+    for even the preceding elements. Even after doing the popping, 
+    the stackstackstack remains sorted.
+    */
+    bool find132pattern(vector<int>& nums) {
+        int sz = nums.size();
+
+        if(sz<3)    return false;
+
+        vector<int> minn(sz);
+        minn[0] = nums[0];
+
+        for(int i=1;i<sz;i++){
+            minn[i] = min(minn[i-1],nums[i]);
+        }
+
+        stack<int> stk;
+        stk.push(nums[sz-1]);
+
+        for(int i=sz-1;i>=1;i--){
+            int min_till_now = minn[i-1];
+
+            if(min_till_now < nums[i]){
+                while(!stk.empty() && stk.top() <= min_till_now){
+                    stk.pop();
+                }
+
+                if(!stk.empty() && stk.top() < nums[i])
+                    return true;
+                    
+                stk.push(nums[i]);
+            }
+        }
+
+        return false;
+    }
+};
