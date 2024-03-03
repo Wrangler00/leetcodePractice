@@ -1,0 +1,146 @@
+Given an integer array nums, return the number of reverse pairs in the array.
+
+A reverse pair is a pair (i, j) where:
+
+0 <= i < j < nums.length and
+nums[i] > 2 * nums[j].
+ 
+
+Example 1:
+
+Input: nums = [1,3,2,3,1]
+Output: 2
+Explanation: The reverse pairs are:
+(1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1
+(3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1
+Example 2:
+
+Input: nums = [2,4,3,5,1]
+Output: 3
+Explanation: The reverse pairs are:
+(1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1
+(2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1
+(3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1
+ 
+
+Constraints:
+
+1 <= nums.length <= 5 * 104
+-231 <= nums[i] <= 231 - 1
+
+//cpp
+//my merge sort array using binarysearch
+
+class Solution {
+    int sz;
+public:
+    //TLE
+    int bruteForce(vector<int>& nums){
+        int ans = 0;
+        //brute force
+        for(int i=0;i<sz;i++){
+            for(int j=i+1;j<sz;j++){
+                if((long)nums[i] > (long)2*nums[j])
+                    ++ans;
+            }
+        }
+        return ans;
+    }
+
+    //TLE
+    int balanceTreeMultisort(vector<int>& nums){
+        int ans = 0;
+        multiset<int> btree;
+
+        btree.insert(nums[sz-1]);
+
+        //O(nlogn) solution //still time limit exceeded
+        for(int i=sz-2;i>=0;i--){
+            int val = ceil((nums[i]/2.0));
+            auto it = btree.lower_bound(val);
+            int elem = distance(btree.begin(), it);
+
+            ans+=elem;
+            btree.insert(nums[i]);
+        }
+
+        return ans;
+    }
+
+    void print(vector<int> &nums,int l,int r){
+        for(int i=l;i<=r;i++)   cout<<nums[i]<<" ";
+        cout<<endl;
+    }
+
+    int bins(vector<int> &arr,int &val,int l,int r){
+        int mid;
+        int start = l,end = r;
+
+        while(l<=r){
+            mid = (l+r)/2;
+            if((long)arr[mid]*2 >= (long)val){
+                r = mid-1;
+            }else{
+                l = mid+1;
+            }
+        }
+
+        return l-1;
+    }
+
+    void merge(vector<int> &nums,int l,int r,int mid,int &ans){
+        vector<int> arr(r-l+1);
+
+        int i=l,j=mid+1,k=0;
+        int start = j,end = r;
+
+        while(i<=mid){
+            int val = nums[i];
+            int index = bins(nums,val,start,end);
+            if(index>=j){
+                ans+=(index-j+1);
+            }
+            start = index+1;
+            ++i;
+        }
+
+        i=l;
+
+        while(i<=mid && j<=r){
+            if(nums[i] < nums[j]){
+                arr[k++] = nums[i++];
+            }else{
+                arr[k++] = nums[j++];
+            }
+        }
+
+        while(i<=mid)   arr[k++] = nums[i++];
+        while(j<=r)   arr[k++] = nums[j++];
+
+        i = l,k=0;
+
+        while(i<=r){
+            nums[i++] = arr[k++];
+        }
+    }
+
+    //Accepted
+    void mergeSort(vector<int> &nums,int l,int r,int &ans){
+        if(l<r){
+            int mid = (l+r)/2;
+            mergeSort(nums,l,mid,ans);
+            mergeSort(nums,mid+1,r,ans);
+            merge(nums,l,r,mid,ans);
+        }
+    }
+
+    int reversePairs(vector<int>& nums) {
+        int ans = 0;
+        sz = nums.size();
+        
+        //using merge sort
+        //since its stable sort technique
+        mergeSort(nums,0,sz-1,ans);
+        return ans;
+    }
+};
